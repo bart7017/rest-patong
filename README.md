@@ -1,38 +1,143 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🏝️ Restaurant Patong - QR Menu System
 
-## Getting Started
+Un système de menu QR complet pour le Restaurant Patong à Phuket, Thaïlande.
 
-First, run the development server:
+## 🌟 Fonctionnalités
+
+- **Menu QR multilingue** (Français, Anglais, Thaï, Russe, Allemand)
+- **Interface mobile-first** optimisée pour smartphones
+- **Dashboard administrateur** pour gestion du menu
+- **Analytics en temps réel** des consultations
+- **Design moderne** et responsive
+
+## 🚀 Démarrage rapide
+
+### Prérequis
+- Node.js 18+
+- pnpm
+- MongoDB
+
+### Installation
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+# Cloner le projet
+git clone <repo-url>
+cd rest-patong
+
+# Installer les dépendances
+pnpm install
+
+# Configurer la base de données
+# Démarrer MongoDB localement ou utiliser Docker
+docker run --name mongodb -d -p 27017:27017 mongo:latest
+
+# Lancer tous les services
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📱 Applications
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Client Menu (Port 3000)
+Interface publique du menu QR pour les clients
+- **URL**: http://localhost:3000
+- **Langues**: /fr, /en, /th, /ru, /de
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### Admin Dashboard (Port 3001)  
+Interface d'administration pour la gestion
+- **URL**: http://localhost:3001
+- **Analytics**: http://localhost:3001/analytics
 
-## Learn More
+### Backend API (Port 3001)
+API REST pour les données et analytics
+- **Health**: http://localhost:3001/health
+- **Analytics**: http://localhost:3001/api/analytics
 
-To learn more about Next.js, take a look at the following resources:
+## 🛠️ Structure du projet
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+rest-patong/
+├── apps/
+│   ├── client/          # Menu QR client (Next.js)
+│   └── admin/           # Dashboard admin (Next.js)
+├── backend/             # API serveur (Express + MongoDB)
+├── architecture-*.md   # Documentation architecture
+└── package.json        # Configuration workspace
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## 🌍 Support multilingue
 
-## Deploy on Vercel
+Le système supporte 5 langues :
+- 🇫🇷 Français (fr)
+- 🇬🇧 English (en)  
+- 🇹🇭 ไทย (th)
+- 🇷🇺 Русский (ru)
+- 🇩🇪 Deutsch (de)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📊 Analytics
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Le système track automatiquement :
+- Consultations par plat
+- Langues préférées des clients
+- Heures de pointe
+- Termes de recherche populaires
+- Engagement utilisateur
 
-++ deploy
+## 🔧 Configuration
+
+### Variables d'environnement
+
+Copier `/backend/.env.example` vers `/backend/.env` et configurer :
+
+```env
+MONGODB_URI=mongodb://localhost:27017/restaurant-patong
+JWT_SECRET=your-super-secret-jwt-key
+CLIENT_URL=http://localhost:3000
+ADMIN_URL=http://localhost:3001
+```
+
+## 📝 Scripts disponibles
+
+```bash
+# Développement (tous les services)
+pnpm dev
+
+# Services individuels
+pnpm dev:client    # Menu client uniquement
+pnpm dev:admin     # Dashboard admin uniquement  
+pnpm dev:backend   # API backend uniquement
+
+# Build production
+pnpm build
+
+# Linting
+pnpm lint
+```
+
+## 🎯 Utilisation
+
+1. **Scan QR Code** → Ouverture automatique du menu
+2. **Sélection langue** → Interface adaptée
+3. **Navigation menu** → Recherche, filtres, favoris
+4. **Consultation plats** → Photos, prix, descriptions
+5. **Appel serveuse** → Pour commander
+
+## 🏗️ Architecture
+
+Système modulaire avec :
+- **Frontend** : Next.js 14 + Tailwind CSS
+- **Backend** : Express.js + TypeScript  
+- **Database** : MongoDB + Mongoose
+- **Analytics** : Tracking temps réel
+- **Deployment** : Prêt pour Vercel/Railway
+
+## 🤝 Contribution
+
+1. Fork le projet
+2. Créer une branche feature
+3. Commit les changements  
+4. Push vers la branche
+5. Ouvrir une Pull Request
+
+## 📄 License
+
+Projet privé - Restaurant Patong © 2024
