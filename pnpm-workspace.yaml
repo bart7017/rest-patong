@@ -1,4 +1,0 @@
-packages:
-  - 'backend'
-  - 'frontend/client'
-  - 'frontend/admin'
