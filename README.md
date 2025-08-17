@@ -42,10 +42,10 @@ Interface publique du menu QR pour les clients
 - **URL**: http://localhost:3000
 - **Langues**: /fr, /en, /th, /ru, /de
 
-### Admin Dashboard (Port 3001)  
+### Admin Dashboard (Port 3002)  
 Interface d'administration pour la gestion
-- **URL**: http://localhost:3001
-- **Analytics**: http://localhost:3001/analytics
+- **URL**: http://localhost:3002
+- **Analytics**: http://localhost:3002/analytics
 
 ### Backend API (Port 3001)
 API REST pour les données et analytics
@@ -92,7 +92,7 @@ Copier `/backend/.env.example` vers `/backend/.env` et configurer :
 MONGODB_URI=mongodb://localhost:27017/restaurant-patong
 JWT_SECRET=your-super-secret-jwt-key
 CLIENT_URL=http://localhost:3000
-ADMIN_URL=http://localhost:3001
+ADMIN_URL=http://localhost:3002
 ```
 
 ## 📝 Scripts disponibles

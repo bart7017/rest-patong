@@ -21,10 +21,10 @@ app.use(compression());
 app.use(cors({
   origin: [
     'http://localhost:3000', // Client
-    'http://localhost:3001', // Admin
-    'http://localhost:3002', // Dev
+    'http://localhost:3002', // Admin
+    'http://localhost:3003', // Dev
     process.env.CLIENT_URL || 'http://localhost:3000',
-    process.env.ADMIN_URL || 'http://localhost:3001'
+    process.env.ADMIN_URL || 'http://localhost:3002'
   ],
   credentials: true
 }));
