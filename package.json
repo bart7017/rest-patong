@@ -1,0 +1,21 @@
+{
+  "name": "restaurant-patong",
+  "version": "1.0.0",
+  "description": "Système Menu QR Restaurant Patong",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend/client",
+    "frontend/admin"
+  ],
+  "scripts": {
+    "dev": "concurrently \"pnpm -C backend dev\" \"pnpm -C frontend/client dev\" \"pnpm -C frontend/admin dev\"",
+    "dev:backend": "pnpm -C backend dev",
+    "dev:client": "pnpm -C frontend/client dev", 
+    "dev:admin": "pnpm -C frontend/admin dev",
+    "install:all": "pnpm install && pnpm -C backend install && pnpm -C frontend/client install && pnpm -C frontend/admin install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

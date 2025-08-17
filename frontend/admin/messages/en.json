@@ -1,0 +1,34 @@
+{
+  "restaurant": {
+    "name": "Restaurant Patong"
+  },
+  "auth": {
+    "welcome": "Welcome",
+    "adminPanel": "Admin Panel",
+    "login": "Login",
+    "logout": "Logout"
+  },
+  "dashboard": {
+    "todayOrders": "Today's Orders",
+    "totalRevenue": "Total Revenue",
+    "totalDishes": "Menu Items",
+    "qrScans": "QR Scans"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "menu": "Menu",
+    "categories": "Categories",
+    "orders": "Orders",
+    "analytics": "Analytics",
+    "settings": "Settings"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add"
+  }
+}
