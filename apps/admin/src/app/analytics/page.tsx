@@ -7,14 +7,16 @@ import {
   ClockIcon, 
   GlobeAltIcon,
   FireIcon,
-  TrendingUpIcon,
+  ArrowTrendingUpIcon,
   CalendarDaysIcon,
   UserGroupIcon,
   MagnifyingGlassIcon,
   DevicePhoneMobileIcon,
   ArrowUpIcon,
-  ArrowDownIcon
+  ArrowDownIcon,
+  ArrowLeftIcon
 } from '@heroicons/react/24/outline';
+import Link from 'next/link';
 
 interface AnalyticsData {
   overview: {
@@ -74,53 +76,33 @@ export default function AnalyticsPage() {
     },
     topDishes: [
       {
-        name: 'Tom Yum Kung',
+        name: 'French Tacos Personnalisable',
+        views: 1456,
+        trend: 25,
+        languages: [
+          { code: 'fr', percentage: 45 },
+          { code: 'en', percentage: 30 },
+          { code: 'de', percentage: 15 }
+        ]
+      },
+      {
+        name: 'Burger Classique',
         views: 1234,
-        trend: 15,
+        trend: 18,
         languages: [
-          { code: 'en', percentage: 45 },
-          { code: 'fr', percentage: 25 },
-          { code: 'th', percentage: 20 }
-        ]
-      },
-      {
-        name: 'Pad Thai',
-        views: 1089,
-        trend: 8,
-        languages: [
-          { code: 'en', percentage: 50 },
-          { code: 'de', percentage: 30 },
-          { code: 'ru', percentage: 15 }
-        ]
-      },
-      {
-        name: 'Green Curry',
-        views: 987,
-        trend: -3,
-        languages: [
-          { code: 'en', percentage: 60 },
-          { code: 'fr', percentage: 25 },
-          { code: 'th', percentage: 10 }
-        ]
-      },
-      {
-        name: 'Mango Sticky Rice',
-        views: 856,
-        trend: 22,
-        languages: [
-          { code: 'th', percentage: 40 },
-          { code: 'en', percentage: 35 },
+          { code: 'en', percentage: 40 },
+          { code: 'fr', percentage: 35 },
           { code: 'ru', percentage: 20 }
         ]
       },
       {
-        name: 'Som Tam',
-        views: 743,
-        trend: 5,
+        name: 'French Tacos Signature',
+        views: 987,
+        trend: 12,
         languages: [
-          { code: 'th', percentage: 55 },
+          { code: 'fr', percentage: 55 },
           { code: 'en', percentage: 30 },
-          { code: 'fr', percentage: 15 }
+          { code: 'de', percentage: 15 }
         ]
       }
     ],
@@ -151,11 +133,11 @@ export default function AnalyticsPage() {
       ]
     },
     searchTerms: [
-      { term: 'curry', count: 234, trend: 15 },
-      { term: 'seafood', count: 189, trend: 8 },
-      { term: 'vegetarian', count: 156, trend: 22 },
-      { term: 'spicy', count: 134, trend: -5 },
-      { term: 'dessert', count: 98, trend: 12 }
+      { term: 'tacos', count: 567, trend: 28 },
+      { term: 'burger', count: 423, trend: 15 },
+      { term: 'fromage', count: 234, trend: 12 },
+      { term: 'poulet', count: 189, trend: 8 },
+      { term: 'frites', count: 156, trend: 5 }
     ],
     deviceStats: {
       mobile: 85,
@@ -182,14 +164,25 @@ export default function AnalyticsPage() {
       <div className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 flex items-center">
-                <ChartBarIcon className="h-8 w-8 mr-3 text-blue-600" />
-                Analytics Détaillés
-              </h1>
-              <p className="mt-1 text-gray-600">
-                Statistiques complètes du menu QR - {new Date().toLocaleDateString('fr-FR')}
-              </p>
+            <div className="flex items-center space-x-4">
+              {/* Navigation de retour */}
+              <Link 
+                href="/"
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex items-center space-x-2 text-gray-600 hover:text-gray-900"
+              >
+                <ArrowLeftIcon className="h-5 w-5" />
+                <span className="text-sm font-medium">Dashboard</span>
+              </Link>
+              
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 flex items-center">
+                  <ChartBarIcon className="h-8 w-8 mr-3 text-blue-600" />
+                  Analytics Détaillés
+                </h1>
+                <p className="mt-1 text-gray-600">
+                  Statistiques complètes du menu QR - {new Date().toLocaleDateString('fr-FR')}
+                </p>
+              </div>
             </div>
             <div className="flex items-center space-x-4">
               <select
@@ -273,7 +266,7 @@ export default function AnalyticsPage() {
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                <TrendingUpIcon className="h-6 w-6 text-purple-600" />
+                <ArrowTrendingUpIcon className="h-6 w-6 text-purple-600" />
               </div>
               <div className="text-sm text-purple-600 font-semibold bg-purple-100 px-2 py-1 rounded-full">
                 Excellent
