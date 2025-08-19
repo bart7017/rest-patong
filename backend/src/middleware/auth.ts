@@ -64,3 +64,6 @@ export const requireAdmin = async (req: AuthRequest, res: Response, next: NextFu
     });
   }
 };
+
+// Alias pour compatibilité
+export const auth = authenticateToken;

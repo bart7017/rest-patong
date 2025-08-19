@@ -7,6 +7,7 @@ export interface IDish extends Document {
   description: MultiLanguageText;
   shortDescription?: MultiLanguageText;
   category: mongoose.Types.ObjectId;
+  ingredients: mongoose.Types.ObjectId[]; // Référence aux ingrédients
   price: PriceInfo;
   images: string[];
   preparationTime?: number; // en minutes
@@ -75,6 +76,10 @@ const dishSchema = new Schema<IDish>(
       ref: 'Category',
       required: true,
     },
+    ingredients: [{
+      type: Schema.Types.ObjectId,
+      ref: 'Ingredient',
+    }],
     price: {
       amount: { type: Number, required: true, min: 0 },
       currency: { type: String, default: 'THB' },

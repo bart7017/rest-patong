@@ -6,6 +6,9 @@ import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import { connectDatabase } from './config/database';
 import analyticsRoutes from './routes/analytics';
+import ingredientRoutes from './routes/ingredients';
+import categoryRoutes from './routes/categories';
+import dishRoutes from './routes/dishes';
 
 // Charger les variables d'environnement
 dotenv.config();
@@ -43,6 +46,9 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/ingredients', ingredientRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/dishes', dishRoutes);
 
 // Route de santé
 app.get('/health', (req, res) => {
@@ -60,7 +66,10 @@ app.get('/', (req, res) => {
     version: '1.0.0',
     endpoints: {
       health: '/health',
-      analytics: '/api/analytics'
+      analytics: '/api/analytics',
+      ingredients: '/api/ingredients',
+      categories: '/api/categories',
+      dishes: '/api/dishes'
     }
   });
 });
@@ -87,15 +96,22 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 // Démarrage du serveur
 async function startServer() {
   try {
-    // Connexion à la base de données
-    await connectDatabase();
-    console.log('✅ Base de données connectée');
+    // Tentative de connexion à la base de données
+    try {
+      await connectDatabase();
+      console.log('✅ Base de données connectée');
+    } catch (dbError) {
+      console.warn('⚠️ Base de données non disponible, démarrage en mode dégradé');
+    }
 
     // Démarrage du serveur
     app.listen(PORT, () => {
       console.log(`🚀 Serveur démarré sur le port ${PORT}`);
       console.log(`🌐 URL: http://localhost:${PORT}`);
       console.log(`📊 Analytics: http://localhost:${PORT}/api/analytics`);
+      console.log(`🥬 Ingredients: http://localhost:${PORT}/api/ingredients`);
+      console.log(`🏷️ Categories: http://localhost:${PORT}/api/categories`);
+      console.log(`🍽️ Dishes: http://localhost:${PORT}/api/dishes`);
       console.log(`❤️  Health: http://localhost:${PORT}/health`);
     });
   } catch (error) {
