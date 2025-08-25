@@ -88,7 +88,7 @@ export default function IngredientsPage() {
         description: editingIngredient.description || { fr: '', en: '', th: '', ru: '', de: '' },
         category: editingIngredient.category || 'other',
         price: editingIngredient.price || { amount: 0, currency: 'THB' },
-        image: editingIngredient.image || null,
+        image: null,
         isActive: editingIngredient.isActive !== undefined ? editingIngredient.isActive : true,
         allergens: editingIngredient.allergens || {
           gluten: false,
@@ -154,7 +154,11 @@ export default function IngredientsPage() {
       // Mode modification
       const updatedIngredients = ingredients.map(ingredient => 
         ingredient._id === editingIngredient._id 
-          ? { ...ingredient, ...formData }
+          ? { 
+              ...ingredient, 
+              ...formData,
+              image: formData.image ? URL.createObjectURL(formData.image) : ingredient.image
+            }
           : ingredient
       );
       setIngredients(updatedIngredients);
@@ -163,7 +167,8 @@ export default function IngredientsPage() {
       // Mode ajout
       const newIngredient: Ingredient = {
         _id: Date.now().toString(),
-        ...formData
+        ...formData,
+        image: formData.image ? URL.createObjectURL(formData.image) : undefined
       };
       setIngredients([...ingredients, newIngredient]);
     }

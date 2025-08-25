@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from '@/contexts/TranslationContext';
+import { api } from '@/lib/api';
 import { 
   ChartBarIcon, 
   EyeIcon, 
@@ -62,92 +64,48 @@ interface AnalyticsData {
 }
 
 export default function AnalyticsPage() {
-  const [data, setData] = useState<AnalyticsData>({
-    overview: {
-      totalViews: 12847,
-      uniqueVisitors: 3241,
-      avgSessionTime: 4.2,
-      conversionRate: 15.8,
-      trends: {
-        views: 12,
-        visitors: 8,
-        sessionTime: -5
-      }
-    },
-    topDishes: [
-      {
-        name: 'French Tacos Personnalisable',
-        views: 1456,
-        trend: 25,
-        languages: [
-          { code: 'fr', percentage: 45 },
-          { code: 'en', percentage: 30 },
-          { code: 'de', percentage: 15 }
-        ]
-      },
-      {
-        name: 'Burger Classique',
-        views: 1234,
-        trend: 18,
-        languages: [
-          { code: 'en', percentage: 40 },
-          { code: 'fr', percentage: 35 },
-          { code: 'ru', percentage: 20 }
-        ]
-      },
-      {
-        name: 'French Tacos Signature',
-        views: 987,
-        trend: 12,
-        languages: [
-          { code: 'fr', percentage: 55 },
-          { code: 'en', percentage: 30 },
-          { code: 'de', percentage: 15 }
-        ]
-      }
-    ],
-    languageStats: [
-      { language: 'English', code: 'en', flag: '🇬🇧', percentage: 45, views: 5781, trend: 10 },
-      { language: 'Français', code: 'fr', flag: '🇫🇷', percentage: 25, views: 3212, trend: 5 },
-      { language: 'ไทย', code: 'th', flag: '🇹🇭', percentage: 15, views: 1927, trend: 15 },
-      { language: 'Русский', code: 'ru', flag: '🇷🇺', percentage: 10, views: 1285, trend: 8 },
-      { language: 'Deutsch', code: 'de', flag: '🇩🇪', percentage: 5, views: 642, trend: 3 }
-    ],
-    timeAnalytics: {
-      hourly: [
-        { hour: 6, views: 45 }, { hour: 7, views: 78 }, { hour: 8, views: 134 },
-        { hour: 9, views: 189 }, { hour: 10, views: 267 }, { hour: 11, views: 345 },
-        { hour: 12, views: 456 }, { hour: 13, views: 398 }, { hour: 14, views: 334 },
-        { hour: 15, views: 278 }, { hour: 16, views: 234 }, { hour: 17, views: 289 },
-        { hour: 18, views: 456 }, { hour: 19, views: 567 }, { hour: 20, views: 634 },
-        { hour: 21, views: 543 }, { hour: 22, views: 345 }, { hour: 23, views: 234 }
-      ],
-      daily: [
-        { day: 'Lun', views: 1845 }, { day: 'Mar', views: 2134 }, { day: 'Mer', views: 1987 },
-        { day: 'Jeu', views: 2245 }, { day: 'Ven', views: 2567 }, { day: 'Sam', views: 3456 },
-        { day: 'Dim', views: 2987 }
-      ],
-      weekly: [
-        { week: 'S1', views: 8765 }, { week: 'S2', views: 9234 }, { week: 'S3', views: 8945 },
-        { week: 'S4', views: 10234 }
-      ]
-    },
-    searchTerms: [
-      { term: 'tacos', count: 567, trend: 28 },
-      { term: 'burger', count: 423, trend: 15 },
-      { term: 'fromage', count: 234, trend: 12 },
-      { term: 'poulet', count: 189, trend: 8 },
-      { term: 'frites', count: 156, trend: 5 }
-    ],
-    deviceStats: {
-      mobile: 85,
-      tablet: 10,
-      desktop: 5
-    }
-  });
-
+  const { t, locale } = useTranslations();
+  const [data, setData] = useState<AnalyticsData | null>(null);
   const [timeRange, setTimeRange] = useState('week');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Charger les données analytics depuis l'API
+  useEffect(() => {
+    const loadAnalytics = async () => {
+      try {
+        setIsLoading(true);
+        console.log('Analytics: Loading data from API...');
+        const analyticsData = await api.getAnalytics();
+        console.log('Analytics: Received data:', analyticsData);
+        setData(analyticsData);
+      } catch (error) {
+        console.error('Analytics: Error loading data:', error);
+        // En cas d'erreur, utiliser des données par défaut
+        setData({
+          overview: {
+            totalViews: 0,
+            uniqueVisitors: 0,
+            avgSessionTime: 0,
+            conversionRate: 0,
+            trends: { views: 0, visitors: 0, sessionTime: 0 }
+          },
+          topDishes: [],
+          languageStats: [],
+          timeAnalytics: {
+            hourly: [],
+            daily: [],
+            weekly: []
+          },
+          searchTerms: [],
+          deviceStats: { mobile: 0, tablet: 0, desktop: 0 }
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadAnalytics();
+  }, []);
 
   const formatNumber = (num: number) => {
     if (num >= 1000) {
@@ -156,7 +114,28 @@ export default function AnalyticsPage() {
     return num.toString();
   };
 
-  const maxViews = Math.max(...data.timeAnalytics.hourly.map(item => item.views));
+  const maxViews = data ? Math.max(...data.timeAnalytics.hourly.map(item => item.views)) : 0;
+  
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent border-solid rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-lg font-medium text-gray-700">{t('loading')}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!data) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-lg font-medium text-gray-700">{t('error')}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
@@ -171,16 +150,16 @@ export default function AnalyticsPage() {
                 className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex items-center space-x-2 text-gray-600 hover:text-gray-900"
               >
                 <ArrowLeftIcon className="h-5 w-5" />
-                <span className="text-sm font-medium">Dashboard</span>
+                <span className="text-sm font-medium">{t('dashboard')}</span>
               </Link>
               
               <div>
                 <h1 className="text-3xl font-bold text-gray-900 flex items-center">
                   <ChartBarIcon className="h-8 w-8 mr-3 text-blue-600" />
-                  Analytics Détaillés
+                  {t('detailedAnalytics')}
                 </h1>
                 <p className="mt-1 text-gray-600">
-                  Statistiques complètes du menu QR - {new Date().toLocaleDateString('fr-FR')}
+                  {t('completeQRMenuStats')} - {new Date().toLocaleDateString('fr-FR')}
                 </p>
               </div>
             </div>
@@ -190,10 +169,10 @@ export default function AnalyticsPage() {
                 onChange={(e) => setTimeRange(e.target.value)}
                 className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="day">Aujourd'hui</option>
-                <option value="week">Cette semaine</option>
-                <option value="month">Ce mois</option>
-                <option value="year">Cette année</option>
+                <option value="day">{t('today')}</option>
+                <option value="week">{t('thisWeek')}</option>
+                <option value="month">{t('thisMonth')}</option>
+                <option value="year">{t('thisYear')}</option>
               </select>
             </div>
           </div>
@@ -219,7 +198,7 @@ export default function AnalyticsPage() {
                 {Math.abs(data.overview.trends.views)}%
               </div>
             </div>
-            <h3 className="text-sm font-medium text-gray-600 mb-1">Total Consultations</h3>
+            <h3 className="text-sm font-medium text-gray-600 mb-1">{t('totalConsultations')}</h3>
             <p className="text-3xl font-bold text-gray-900">{formatNumber(data.overview.totalViews)}</p>
           </div>
 
@@ -239,7 +218,7 @@ export default function AnalyticsPage() {
                 {Math.abs(data.overview.trends.visitors)}%
               </div>
             </div>
-            <h3 className="text-sm font-medium text-gray-600 mb-1">Visiteurs Uniques</h3>
+            <h3 className="text-sm font-medium text-gray-600 mb-1">{t('uniqueVisitors')}</h3>
             <p className="text-3xl font-bold text-gray-900">{formatNumber(data.overview.uniqueVisitors)}</p>
           </div>
 
@@ -259,8 +238,8 @@ export default function AnalyticsPage() {
                 {Math.abs(data.overview.trends.sessionTime)}%
               </div>
             </div>
-            <h3 className="text-sm font-medium text-gray-600 mb-1">Temps Moyen</h3>
-            <p className="text-3xl font-bold text-gray-900">{data.overview.avgSessionTime}<span className="text-lg">min</span></p>
+            <h3 className="text-sm font-medium text-gray-600 mb-1">{t('averageTime')}</h3>
+            <p className="text-3xl font-bold text-gray-900">{data.overview.avgSessionTime.toFixed(2)}<span className="text-lg">min</span></p>
           </div>
 
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
@@ -269,11 +248,11 @@ export default function AnalyticsPage() {
                 <ArrowTrendingUpIcon className="h-6 w-6 text-purple-600" />
               </div>
               <div className="text-sm text-purple-600 font-semibold bg-purple-100 px-2 py-1 rounded-full">
-                Excellent
+                {t('excellent')}
               </div>
             </div>
-            <h3 className="text-sm font-medium text-gray-600 mb-1">Taux Engagement</h3>
-            <p className="text-3xl font-bold text-gray-900">{data.overview.conversionRate}%</p>
+            <h3 className="text-sm font-medium text-gray-600 mb-1">{t('engagementRate')}</h3>
+            <p className="text-3xl font-bold text-gray-900">{data.overview.conversionRate.toFixed(2)}%</p>
           </div>
         </div>
 
@@ -283,7 +262,7 @@ export default function AnalyticsPage() {
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
               <CalendarDaysIcon className="h-5 w-5 mr-2 text-blue-600" />
-              Trafic par Heure
+              {t('trafficByHour')}
             </h3>
             <div className="space-y-3">
               {data.timeAnalytics.hourly.filter(item => item.hour >= 8 && item.hour <= 23).map((item) => (
@@ -311,7 +290,7 @@ export default function AnalyticsPage() {
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
               <GlobeAltIcon className="h-5 w-5 mr-2 text-green-600" />
-              Répartition des Langues
+              {t('languageDistribution')}
             </h3>
             <div className="space-y-4">
               {data.languageStats.map((lang) => (
@@ -353,11 +332,11 @@ export default function AnalyticsPage() {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-8">
           <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
             <FireIcon className="h-5 w-5 mr-2 text-orange-600" />
-            Top 5 Plats les Plus Consultés
+            {t('topDishes')}
           </h3>
           <div className="space-y-4">
             {data.topDishes.map((dish, index) => (
-              <div key={dish.name} className="flex items-center p-4 bg-gray-50 rounded-xl">
+              <div key={dish.name.fr} className="flex items-center p-4 bg-gray-50 rounded-xl">
                 <div className="flex items-center min-w-[60px]">
                   <span className={`text-2xl font-bold ${
                     index === 0 ? 'text-yellow-500' : 
@@ -368,7 +347,7 @@ export default function AnalyticsPage() {
                   </span>
                 </div>
                 <div className="flex-1 mx-4">
-                  <h4 className="text-lg font-semibold text-gray-900">{dish.name}</h4>
+                  <h4 className="text-lg font-semibold text-gray-900">{dish.name[locale] || dish.name.fr}</h4>
                   <div className="flex items-center space-x-2 mt-1">
                     {dish.languages.slice(0, 3).map((lang) => (
                       <span key={lang.code} className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
@@ -400,7 +379,7 @@ export default function AnalyticsPage() {
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
               <MagnifyingGlassIcon className="h-5 w-5 mr-2 text-purple-600" />
-              Termes de Recherche Populaires
+              {t('popularSearchTerms')}
             </h3>
             <div className="space-y-3">
               {data.searchTerms.map((term) => (
@@ -428,13 +407,13 @@ export default function AnalyticsPage() {
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
               <DevicePhoneMobileIcon className="h-5 w-5 mr-2 text-indigo-600" />
-              Répartition par Appareil
+              {t('deviceDistribution')}
             </h3>
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <span className="text-2xl mr-3">📱</span>
-                  <span className="text-sm font-medium text-gray-700">Mobile</span>
+                  <span className="text-sm font-medium text-gray-700">{t('mobile')}</span>
                 </div>
                 <span className="text-2xl font-bold text-gray-900">{data.deviceStats.mobile}%</span>
               </div>
@@ -448,7 +427,7 @@ export default function AnalyticsPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <span className="text-2xl mr-3">📱</span>
-                  <span className="text-sm font-medium text-gray-700">Tablette</span>
+                  <span className="text-sm font-medium text-gray-700">{t('tablet')}</span>
                 </div>
                 <span className="text-xl font-bold text-gray-900">{data.deviceStats.tablet}%</span>
               </div>
@@ -462,7 +441,7 @@ export default function AnalyticsPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <span className="text-2xl mr-3">💻</span>
-                  <span className="text-sm font-medium text-gray-700">Desktop</span>
+                  <span className="text-sm font-medium text-gray-700">{t('desktop')}</span>
                 </div>
                 <span className="text-xl font-bold text-gray-900">{data.deviceStats.desktop}%</span>
               </div>

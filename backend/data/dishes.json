@@ -1,0 +1,374 @@
+[
+  {
+    "_id": "6",
+    "name": {
+      "fr": "French Tacos Signature",
+      "en": "Signature French Tacos",
+      "th": "เฟรนช์ทาโค่ซิกเนเจอร์",
+      "ru": "Фирменный французский такос",
+      "de": "Signature French Tacos"
+    },
+    "description": {
+      "fr": "Notre French Tacos signature avec poulet, frites, sauce fromagère",
+      "en": "Our signature French Tacos with chicken, fries, cheese sauce",
+      "th": "เฟรนช์ทาโค่ซิกเนเจอร์ของเรากับไก่ เฟรนช์ฟราย ซอสชีส",
+      "ru": "Наш фирменный французский такос с курицей, картофелем фри и сырным соусом",
+      "de": "Unser Signature French Tacos mit Hähnchen, Pommes, Käsesauce"
+    },
+    "category": "3",
+    "price": {
+      "amount": 280,
+      "currency": "THB"
+    },
+    "images": [],
+    "tags": {
+      "isNew": true,
+      "isPopular": false,
+      "isChefSpecial": true
+    },
+    "dietary": {
+      "isVegetarian": false,
+      "isVegan": false,
+      "isSpicy": false,
+      "spicyLevel": 0
+    },
+    "isActive": true,
+    "preparationTime": 15
+  },
+  {
+    "_id": "7",
+    "name": {
+      "fr": "French Tacos Personnalisable",
+      "en": "Customizable French Tacos",
+      "th": "เฟรนช์ทาโค่ปรับแต่งได้",
+      "ru": "Настраиваемый французский такос",
+      "de": "Anpassbare French Tacos"
+    },
+    "description": {
+      "fr": "Créez votre French Tacos sur mesure en choisissant vos ingrédients préférés",
+      "en": "Create your custom French Tacos by choosing your favorite ingredients",
+      "th": "สร้างเฟรนช์ทาโค่ของคุณเองโดยเลือกส่วนผสมที่คุณชอบ",
+      "ru": "Создайте свой французский такос, выбрав любимые ингредиенты",
+      "de": "Erstellen Sie Ihren French Tacos nach Wunsch mit Ihren Lieblingszutaten"
+    },
+    "category": "3",
+    "price": {
+      "amount": 220,
+      "currency": "THB"
+    },
+    "images": [],
+    "tags": {
+      "isNew": true,
+      "isPopular": true,
+      "isChefSpecial": false
+    },
+    "dietary": {
+      "isVegetarian": false,
+      "isVegan": false,
+      "isSpicy": false,
+      "spicyLevel": 0
+    },
+    "isActive": true,
+    "preparationTime": 12
+  },
+  {
+    "_id": "8",
+    "name": {
+      "fr": "Burger Classique",
+      "en": "Classic Burger",
+      "th": "เบอร์เกอร์คลาสสิค",
+      "ru": "Классический бургер",
+      "de": "Klassischer Burger"
+    },
+    "description": {
+      "fr": "Burger beef avec salade, tomate, cornichons et sauce",
+      "en": "Beef burger with lettuce, tomato, pickles and sauce",
+      "th": "เบอร์เกอร์เนื้อกับผักสลัด มะเขือเทศ หัวไชเท้า และซอส",
+      "ru": "Говяжий бургер с салатом, помидором, солеными огурцами и соусом",
+      "de": "Rindfleisch-Burger mit Salat, Tomate, Gurken und Sauce"
+    },
+    "category": "3",
+    "price": {
+      "amount": 250,
+      "currency": "THB"
+    },
+    "images": [],
+    "tags": {
+      "isNew": false,
+      "isPopular": true,
+      "isChefSpecial": false
+    },
+    "dietary": {
+      "isVegetarian": false,
+      "isVegan": false,
+      "isSpicy": false,
+      "spicyLevel": 0
+    },
+    "isActive": true,
+    "preparationTime": 18
+  },
+  {
+    "_id": "1755637296434",
+    "name": {
+      "fr": "Pizza Margherita",
+      "en": "Margherita Pizza",
+      "th": "พิซซ่ามาร์เกอริต้า",
+      "ru": "Пицца Маргарита",
+      "de": "Margherita Pizza"
+    },
+    "description": {
+      "fr": "Pizza classique avec tomate, mozzarella et basilic",
+      "en": "Classic pizza with tomato, mozzarella and basil",
+      "th": "พิซซ่าแบบคลาสสิคกับมะเขือเทศ มอซซาเรลลา และโหระพา",
+      "ru": "Классическая пицца с помидорами, моцареллой и базиликом",
+      "de": "Klassische Pizza mit Tomate, Mozzarella und Basilikum"
+    },
+    "category": "3",
+    "price": {
+      "amount": 320,
+      "currency": "THB"
+    },
+    "images": [],
+    "tags": {
+      "isNew": true,
+      "isPopular": false,
+      "isChefSpecial": false
+    },
+    "dietary": {
+      "isVegetarian": true,
+      "isVegan": false,
+      "isSpicy": false,
+      "spicyLevel": 0
+    },
+    "isActive": true,
+    "preparationTime": 20,
+    "createdAt": "2025-08-19T21:01:36.434Z",
+    "updatedAt": "2025-08-19T21:01:36.434Z"
+  },
+  {
+    "_id": "1755637956805",
+    "name": {
+      "fr": "Salade César",
+      "en": "Caesar Salad",
+      "th": "สลัดซีซาร์",
+      "ru": "Салат Цезарь",
+      "de": "Caesar Salad"
+    },
+    "description": {
+      "fr": "Salade fraîche avec poulet grillé, parmesan et croûtons",
+      "en": "Fresh salad with grilled chicken, parmesan and croutons",
+      "th": "สลัดสดกับไก่ย่าง พาร์มีซาน และขนมปังปิ้ง",
+      "ru": "Свежий салат с жареной курицей, пармезаном и сухариками",
+      "de": "Frischer Salat mit gegrilltem Hähnchen, Parmesan und Croûtons"
+    },
+    "category": "1",
+    "price": {
+      "amount": 180,
+      "currency": "THB"
+    },
+    "images": [],
+    "tags": {
+      "isNew": false,
+      "isPopular": true,
+      "isChefSpecial": false
+    },
+    "dietary": {
+      "isVegetarian": false,
+      "isVegan": false,
+      "isSpicy": false,
+      "spicyLevel": 0
+    },
+    "isActive": true,
+    "preparationTime": 8,
+    "createdAt": "2025-08-19T21:12:36.805Z",
+    "updatedAt": "2025-08-19T21:12:36.805Z"
+  },
+  {
+    "_id": "1755638739585",
+    "name": {
+      "fr": "qsqdqd",
+      "en": "dsdsdsdd",
+      "th": "",
+      "ru": "",
+      "de": ""
+    },
+    "description": {
+      "fr": "dsdsdsd",
+      "en": "dsdsds",
+      "th": "",
+      "ru": "",
+      "de": ""
+    },
+    "category": "3",
+    "ingredients": [],
+    "price": {
+      "amount": 10,
+      "currency": "THB"
+    },
+    "images": [],
+    "isCustomizable": false,
+    "customizableIngredients": [],
+    "hasExtras": false,
+    "extraIngredients": [],
+    "hasSides": false,
+    "sideOptions": [],
+    "hasSauces": false,
+    "sauceOptions": [],
+    "includedSauces": [],
+    "includedSaucesCount": 1,
+    "allergens": {
+      "gluten": false,
+      "dairy": false,
+      "eggs": false,
+      "nuts": false,
+      "shellfish": false,
+      "soy": false,
+      "fish": false,
+      "peanuts": false
+    },
+    "tags": {
+      "isNew": false,
+      "isPopular": false,
+      "isChefSpecial": false,
+      "isSeasonal": false,
+      "isLimitedTime": false
+    },
+    "dietary": {
+      "isVegetarian": false,
+      "isVegan": false,
+      "isGlutenFree": false,
+      "isHalal": false,
+      "isSpicy": false,
+      "spicyLevel": 0
+    },
+    "views": 0,
+    "order": 4,
+    "isActive": true,
+    "createdAt": "2025-08-19T21:25:39.585Z",
+    "updatedAt": "2025-08-19T21:25:39.585Z"
+  },
+  {
+    "_id": "1755639783117",
+    "name": {
+      "fr": "Plat Test Synchronisation",
+      "en": "Sync Test Dish",
+      "th": "จานทดสอบซิงค์",
+      "ru": "Тестовое блюдо синхронизации",
+      "de": "Sync Test Gericht"
+    },
+    "description": {
+      "fr": "Plat ajouté pour tester la synchronisation en temps réel",
+      "en": "Dish added to test real-time synchronization",
+      "th": "จานที่เพิ่มเพื่อทดสอบการซิงค์แบบเรียลไทม์",
+      "ru": "Блюдо добавлено для тестирования синхронизации в реальном времени",
+      "de": "Gericht hinzugefügt zum Testen der Echtzeit-Synchronisation"
+    },
+    "category": "1",
+    "price": {
+      "amount": 199,
+      "currency": "THB"
+    },
+    "images": [],
+    "ingredients": [],
+    "tags": {
+      "isNew": true,
+      "isPopular": false,
+      "isChefSpecial": false,
+      "isSeasonal": false,
+      "isLimitedTime": false
+    },
+    "dietary": {
+      "isVegetarian": false,
+      "isVegan": false,
+      "isSpicy": false,
+      "spicyLevel": 0
+    },
+    "allergens": {
+      "gluten": false,
+      "dairy": false,
+      "eggs": false,
+      "nuts": false,
+      "shellfish": false,
+      "soy": false,
+      "fish": false,
+      "peanuts": false
+    },
+    "isCustomizable": false,
+    "customizableIngredients": [],
+    "hasExtras": false,
+    "extraIngredients": [],
+    "hasSides": false,
+    "sideOptions": [],
+    "hasSauces": false,
+    "sauceOptions": [],
+    "includedSauces": [],
+    "includedSaucesCount": 1,
+    "views": 0,
+    "order": 7,
+    "isActive": true,
+    "createdAt": "2025-08-19T21:43:03.117Z",
+    "updatedAt": "2025-08-19T21:43:03.117Z"
+  },
+  {
+    "_id": "1755658292264",
+    "name": {
+      "fr": "Test Auto-Sync",
+      "en": "Auto-Sync Test",
+      "th": "ทดสอบซิงค์อัตโนมัติ",
+      "ru": "Тест автосинхронизации",
+      "de": "Auto-Sync Test"
+    },
+    "description": {
+      "fr": "Plat ajouté pour tester la mise à jour automatique de l'admin",
+      "en": "Dish added to test automatic admin refresh",
+      "th": "จานที่เพิ่มเพื่อทดสอบการอัปเดตอัตโนมัติของแอดมิน",
+      "ru": "Блюдо добавлено для тестирования автоматического обновления админки",
+      "de": "Gericht hinzugefügt zum Testen der automatischen Admin-Aktualisierung"
+    },
+    "category": "1",
+    "price": {
+      "amount": 299,
+      "currency": "THB"
+    },
+    "images": [],
+    "ingredients": [],
+    "tags": {
+      "isNew": true,
+      "isPopular": false,
+      "isChefSpecial": false,
+      "isSeasonal": false,
+      "isLimitedTime": false
+    },
+    "dietary": {
+      "isVegetarian": false,
+      "isVegan": false,
+      "isSpicy": false,
+      "spicyLevel": 0
+    },
+    "allergens": {
+      "gluten": false,
+      "dairy": false,
+      "eggs": false,
+      "nuts": false,
+      "shellfish": false,
+      "soy": false,
+      "fish": false,
+      "peanuts": false
+    },
+    "isCustomizable": false,
+    "customizableIngredients": [],
+    "hasExtras": false,
+    "extraIngredients": [],
+    "hasSides": false,
+    "sideOptions": [],
+    "hasSauces": false,
+    "sauceOptions": [],
+    "includedSauces": [],
+    "includedSaucesCount": 1,
+    "views": 0,
+    "order": 8,
+    "isActive": true,
+    "createdAt": "2025-08-20T02:51:32.264Z",
+    "updatedAt": "2025-08-20T02:51:32.264Z"
+  }
+]

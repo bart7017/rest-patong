@@ -2,16 +2,16 @@ import './globals.css';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Restaurant Patong - Menu QR',
-  description: 'Menu digital du Restaurant Patong à Phuket, Thaïlande',
-  keywords: 'restaurant, phuket, patong, menu, thaï, cuisine',
+  title: 'Papy - Menu QR',
+  description: 'Menu digital du restaurant Papy à Phuket, Thaïlande',
+  keywords: 'restaurant, phuket, patong, menu, thaï, cuisine, papy',
   openGraph: {
-    title: 'Restaurant Patong - Menu QR',
-    description: 'Menu digital du Restaurant Patong à Phuket, Thaïlande',
+    title: 'Papy - Menu QR',
+    description: 'Menu digital du restaurant Papy à Phuket, Thaïlande',
     type: 'website',
   },
   manifest: '/manifest.json',
-  themeColor: '#f97316',
+  themeColor: '#10b981',
   viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
 };
 

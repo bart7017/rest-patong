@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import { usePersistedState } from '@/hooks/usePersistedState';
-import { initialDishes, initialCategories, initialIngredients } from '@/data/initialData';
+import { useState, useEffect } from 'react';
+import { api, type Dish, type Category, type Ingredient } from '@/lib/api';
+import { useTranslations } from '@/contexts/TranslationContext';
+import { LanguageSelector } from '@/components/LanguageSelector';
 import { 
   PlusIcon,
   PhotoIcon,
@@ -123,9 +124,11 @@ interface Ingredient {
 }
 
 export default function DishesPage() {
-  const [dishes, setDishes, dishesLoaded] = usePersistedState<Dish[]>('admin-dishes-v6-fresh', initialDishes);
-  const [categories] = usePersistedState('admin-categories', initialCategories);
-  const [ingredients] = usePersistedState('admin-ingredients', initialIngredients);
+  const { t, locale } = useTranslations();
+  const [dishes, setDishes] = useState<Dish[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const [selectedLanguage, setSelectedLanguage] = useState('fr');
   const [searchTerm, setSearchTerm] = useState('');
@@ -153,6 +156,54 @@ export default function DishesPage() {
     { key: 'peanuts', label: 'Cacahuètes', icon: '🥜' },
   ];
 
+  // Charger les données depuis l'API
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      console.log('=== LOAD DATA START ===');
+      console.log('API URL:', process.env.NEXT_PUBLIC_API_URL);
+      console.log('About to call API...');
+      const [dishesData, categoriesData] = await Promise.all([
+        api.getDishes().catch(e => { console.error('getDishes error:', e); throw e; }),
+        api.getCategories().catch(e => { console.error('getCategories error:', e); throw e; })
+      ]);
+      console.log('API calls completed successfully');
+      
+      console.log(`Dishes page: Received ${dishesData.length} dishes, ${categoriesData.length} categories`);
+      console.log('First few dishes:', dishesData.slice(0, 3).map(d => d.name.fr));
+      
+      setDishes(dishesData);
+      setCategories(categoriesData);
+      // Pour l'instant, utiliser les ingredients locaux
+      const { initialIngredients } = await import('@/data/initialData');
+      setIngredients(initialIngredients);
+    } catch (error) {
+      console.error('ERROR: API call failed, using local data:', error);
+      // En cas d'erreur API, utiliser les données locales
+      const { initialDishes, initialCategories, initialIngredients } = await import('@/data/initialData');
+      console.log(`Fallback: Using ${initialDishes.length} local dishes`);
+      setDishes(initialDishes);
+      setCategories(initialCategories);
+      setIngredients(initialIngredients);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // Chargement initial
+    loadData();
+
+    // Mise à jour automatique toutes les 5 secondes
+    const interval = setInterval(() => {
+      console.log('Auto-refresh: Reloading data...');
+      loadData();
+    }, 5000);
+
+    // Nettoyage de l'interval lors du démontage du composant
+    return () => clearInterval(interval);
+  }, []);
+
   const filteredDishes = dishes.filter(dish => {
     const matchesSearch = dish.name[selectedLanguage as keyof typeof dish.name]
       .toLowerCase()
@@ -163,50 +214,91 @@ export default function DishesPage() {
     return matchesSearch && matchesCategory && matchesActiveFilter;
   });
 
-  const handleAddDish = (dishData: any) => {
-    const newDish: Dish = {
-      _id: Date.now().toString(),
-      ...dishData,
-      views: 0,
-      order: dishes.length + 1,
-      isActive: true
-    };
-    setDishes([...dishes, newDish]);
-  };
-
-  const handleEditDish = (dishData: any) => {
-    if (!editingDish) return;
-    
-    const updatedDishes = dishes.map(dish => 
-      dish._id === editingDish._id 
-        ? { ...dish, ...dishData }
-        : dish
-    );
-    setDishes(updatedDishes);
-    setEditingDish(null);
-  };
-
-  const refreshData = () => {
-    if (confirm('Êtes-vous sûr de vouloir actualiser les données ? Cela va recharger les dernières modifications.')) {
-      // Clear all localStorage
-      localStorage.clear();
-      // Reload the page to get fresh data
-      window.location.reload();
+  const handleAddDish = async (dishData: any) => {
+    try {
+      const newDish = await api.createDish({
+        ...dishData,
+        views: 0,
+        order: dishes.length + 1,
+        isActive: true
+      });
+      console.log('Dish added successfully, refreshing data...');
+      // Recharger les données pour s'assurer de la synchronisation
+      await loadData();
+    } catch (error) {
+      console.error('Erreur lors de l\'ajout du plat:', error);
+      // Fallback: ajouter localement
+      const newDish: Dish = {
+        _id: Date.now().toString(),
+        ...dishData,
+        views: 0,
+        order: dishes.length + 1,
+        isActive: true
+      };
+      setDishes([...dishes, newDish]);
     }
   };
 
-  const toggleDishStatus = (id: string) => {
-    setDishes(dishes.map(dish => 
-      dish._id === id ? { ...dish, isActive: !dish.isActive } : dish
-    ));
+  const handleEditDish = async (dishData: any) => {
+    if (!editingDish) return;
+    
+    try {
+      const updatedDish = await api.updateDish(editingDish._id, dishData);
+      console.log('Dish updated successfully, refreshing data...');
+      setEditingDish(null);
+      // Recharger les données pour s'assurer de la synchronisation
+      await loadData();
+    } catch (error) {
+      console.error('Erreur lors de la modification du plat:', error);
+      // Fallback: modifier localement
+      const updatedDishes = dishes.map(dish => 
+        dish._id === editingDish._id 
+          ? { ...dish, ...dishData }
+          : dish
+      );
+      setDishes(updatedDishes);
+      setEditingDish(null);
+    }
   };
 
-  const deleteDish = (id: string) => {
+  const refreshData = async () => {
+    console.log('Manual refresh: Reloading data...');
+    await loadData();
+  };
+
+  const toggleDishStatus = async (id: string) => {
+    const dish = dishes.find(d => d._id === id);
+    if (!dish) return;
+
+    try {
+      const updatedDish = await api.updateDish(id, { isActive: !dish.isActive });
+      console.log('Dish status updated successfully, refreshing data...');
+      // Recharger les données pour s'assurer de la synchronisation
+      await loadData();
+    } catch (error) {
+      console.error('Erreur lors de la modification du statut:', error);
+      // Fallback: modifier localement
+      setDishes(dishes.map(d => 
+        d._id === id ? { ...d, isActive: !d.isActive } : d
+      ));
+    }
+  };
+
+  const deleteDish = async (id: string) => {
     const dish = dishes.find(d => d._id === id);
     const dishName = dish ? dish.name[selectedLanguage as keyof typeof dish.name] : 'ce plat';
     
     if (confirm(`Êtes-vous sûr de vouloir supprimer le plat "${dishName}" ?\n\nCette action est irréversible.`)) {
-      setDishes(dishes.filter(dish => dish._id !== id));
+      try {
+        await api.deleteDish(id);
+        console.log('Dish deleted successfully, refreshing data...');
+        // Recharger les données pour s'assurer de la synchronisation
+        await loadData();
+      } catch (error) {
+        console.error('Erreur lors de la suppression du plat:', error);
+        // Fallback: supprimer localement
+        setDishes(dishes.filter(dish => dish._id !== id));
+      }
     }
   };
 
@@ -231,8 +323,17 @@ export default function DishesPage() {
     return dietary;
   };
 
+  // Debug: Log dishes data to see what we have
+  console.log(`Current dishes state: ${dishes.length} dishes, filtered: ${filteredDishes.length}`);
+
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Debug info */}
+      <div className="p-4 bg-yellow-100 text-sm">
+        Debug: {dishes.length} plats chargés. Loading: {loading.toString()}. API URL: {process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3003/api'}
+        <br />Plats: {dishes.map(d => d.name.fr).join(', ')}
+        <br />Categories: {categories.length} catégories
+      </div>
       {/* Header */}
       <div className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -251,7 +352,7 @@ export default function DishesPage() {
                 <span className="text-white font-bold text-xl">🍽️</span>
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Gestion des Plats</h1>
+                <h1 className="text-2xl font-bold text-gray-900">{t('dishManagement')}</h1>
                 <p className="text-sm text-gray-600">Gérez votre menu et vos spécialités</p>
               </div>
             </div>
@@ -269,13 +370,19 @@ export default function DishesPage() {
                 ))}
               </select>
               
-              <button
-                onClick={refreshData}
-                className="bg-blue-500 text-white px-3 py-2 rounded-lg hover:bg-blue-600 transition-colors text-sm"
-                title="Actualiser les données"
-              >
-                🔄 Actualiser
-              </button>
+              <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-1 bg-green-100 text-green-700 px-3 py-2 rounded-lg text-sm">
+                  <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                  <span>Auto-sync</span>
+                </div>
+                <button
+                  onClick={refreshData}
+                  className="bg-blue-500 text-white px-3 py-2 rounded-lg hover:bg-blue-600 transition-colors text-sm"
+                  title="Actualiser les données maintenant"
+                >
+                  🔄 Actualiser
+                </button>
+              </div>
               <button
                 onClick={() => setShowAddModal(true)}
                 className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors flex items-center space-x-2"
@@ -300,7 +407,7 @@ export default function DishesPage() {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-                  placeholder="Rechercher un plat..."
+                  placeholder={t('searchDish')}
                 />
               </div>
             </div>
@@ -311,7 +418,7 @@ export default function DishesPage() {
                 onChange={(e) => setSelectedCategory(e.target.value)}
                 className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
               >
-                <option value="all">Toutes les catégories</option>
+                <option value="all">{t('allCategories')}</option>
                 {categories.map(category => (
                   <option key={category._id} value={category._id}>
                     {category.icon} {category.name[selectedLanguage as keyof typeof category.name]}
@@ -326,7 +433,7 @@ export default function DishesPage() {
                   onChange={(e) => setShowOnlyActive(e.target.checked)}
                   className="rounded border-gray-300 text-orange-600 focus:ring-orange-500"
                 />
-                <span className="text-sm text-gray-600">Actifs uniquement</span>
+                <span className="text-sm text-gray-600">{t('activeOnly')}</span>
               </label>
               
               <div className="text-sm text-gray-600">
@@ -401,7 +508,7 @@ export default function DishesPage() {
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center space-x-2">
                     <span className="text-2xl font-bold text-gray-900">
-                      {dish.price.amount}
+                      {dish.price?.amount || 0}
                     </span>
                     <span className="text-sm text-gray-500">฿</span>
                   </div>
@@ -430,7 +537,7 @@ export default function DishesPage() {
                   </div>
                   
                   <div className="flex items-center space-x-1">
-                    {Object.entries(dish.allergens)
+                    {dish.allergens && Object.entries(dish.allergens)
                       .filter(([_, value]) => value)
                       .slice(0, 3)
                       .map(([key, _]) => {

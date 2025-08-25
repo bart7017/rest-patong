@@ -1,23 +1,14 @@
 import { Request, Response } from 'express';
-import { Category } from '../models/Category';
-import { ApiResponse } from '@/types';
+import { JsonStorage } from '../storage/jsonStorage';
 
 export const getCategories = async (req: Request, res: Response) => {
   try {
-    const { lang = 'fr' } = req.query;
+    const categories = await JsonStorage.getCategories();
     
-    const categories = await Category.find({ isActive: true })
-      .sort({ order: 1, [`name.${lang}`]: 1 });
-    
-    const response: ApiResponse = {
+    res.json({
       success: true,
-      data: categories,
-      meta: {
-        total: categories.length
-      }
-    };
-    
-    res.json(response);
+      data: categories
+    });
   } catch (error) {
     console.error('Error fetching categories:', error);
     res.status(500).json({

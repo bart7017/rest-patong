@@ -1,13 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from '@/contexts/TranslationContext';
 import { 
   ChartBarIcon, 
   EyeIcon, 
   ClockIcon, 
   GlobeAltIcon,
   FireIcon,
-  TrendingUpIcon,
+  ArrowTrendingUpIcon,
   PlusIcon,
   PhotoIcon,
   CurrencyDollarIcon,
@@ -38,6 +39,7 @@ interface QuickAction {
 }
 
 export default function DashboardPage() {
+  const { t } = useTranslations();
   const [stats, setStats] = useState<DashboardStats>({
     todayScans: 245,
     todayViews: 1847,
@@ -80,7 +82,7 @@ export default function DashboardPage() {
       color: 'bg-gradient-to-br from-amber-500 to-orange-600'
     },
     {
-      title: 'Analytics Détaillés',
+      title: t('detailedAnalytics'),
       description: 'Rapports et statistiques',
       icon: ChartBarIcon,
       href: '/dashboard/analytics',
@@ -226,7 +228,7 @@ export default function DashboardPage() {
         {/* Quick Actions */}
         <div className="mb-8">
           <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-            <TrendingUpIcon className="h-5 w-5 mr-2 text-green-600" />
+            <ArrowTrendingUpIcon className="h-5 w-5 mr-2 text-green-600" />
             Actions Rapides
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

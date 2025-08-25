@@ -1,9 +1,10 @@
 import './globals.css';
 import type { Metadata } from 'next';
+import { TranslationProvider } from '@/contexts/TranslationContext';
 
 export const metadata: Metadata = {
-  title: 'Restaurant Patong - Administration',
-  description: 'Interface d\'administration pour le menu QR du Restaurant Patong',
+  title: 'Papy - Administration',
+  description: 'Interface d\'administration pour le menu QR du restaurant Papy',
   robots: 'noindex, nofollow', // Empêcher l'indexation de l'admin
 };
 
@@ -23,7 +24,9 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
-        {children}
+        <TranslationProvider>
+          {children}
+        </TranslationProvider>
       </body>
     </html>
   );

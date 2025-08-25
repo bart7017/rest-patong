@@ -29,6 +29,7 @@ interface Ingredient {
     de: string;
   };
   image?: string;
+  category: string;
   price?: {
     amount: number;
     currency: string;
@@ -239,6 +240,24 @@ export default function AddDishModal({ isOpen, onClose, onSubmit, categories, in
       sideOptions: prev.sideOptions.includes(ingredientId)
         ? prev.sideOptions.filter(id => id !== ingredientId)
         : [...prev.sideOptions, ingredientId]
+    }));
+  };
+
+  const toggleIncludedSauce = (ingredientId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      includedSauces: prev.includedSauces.includes(ingredientId)
+        ? prev.includedSauces.filter(id => id !== ingredientId)
+        : [...prev.includedSauces, ingredientId]
+    }));
+  };
+
+  const toggleSauceOption = (ingredientId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      sauceOptions: prev.sauceOptions.includes(ingredientId)
+        ? prev.sauceOptions.filter(id => id !== ingredientId)
+        : [...prev.sauceOptions, ingredientId]
     }));
   };
 

@@ -1,0 +1,86 @@
+[
+  {
+    "_id": "1",
+    "name": {
+      "fr": "Entrées",
+      "en": "Appetizers",
+      "th": "อาหารเรียกน้ำย่อย",
+      "ru": "Закуски",
+      "de": "Vorspeisen"
+    },
+    "description": {
+      "fr": "Délicieuses entrées pour commencer",
+      "en": "Delicious starters",
+      "th": "อาหารเรียกน้ำย่อยอร่อย",
+      "ru": "Вкусные закуски",
+      "de": "Köstliche Vorspeisen"
+    },
+    "icon": "🥗",
+    "order": 1,
+    "isActive": true,
+    "dishCount": 8
+  },
+  {
+    "_id": "2",
+    "name": {
+      "fr": "Soupes",
+      "en": "Soups",
+      "th": "ซุป",
+      "ru": "Супы",
+      "de": "Suppen"
+    },
+    "description": {
+      "fr": "Soupes traditionnelles thaï",
+      "en": "Traditional Thai soups",
+      "th": "ซุปไทยแบบดั้งเดิม",
+      "ru": "Традиционные тайские супы",
+      "de": "Traditionelle Thai-Suppen"
+    },
+    "icon": "🍜",
+    "order": 2,
+    "isActive": true,
+    "dishCount": 6
+  },
+  {
+    "_id": "3",
+    "name": {
+      "fr": "Plats principaux",
+      "en": "Main dishes",
+      "th": "อาหารจานหลัก",
+      "ru": "Основные блюда",
+      "de": "Hauptgerichte"
+    },
+    "description": {
+      "fr": "Nos spécialités principales",
+      "en": "Our main specialties",
+      "th": "อาหารพิเศษหลักของเรา",
+      "ru": "Наши основные деликатесы",
+      "de": "Unsere Hauptspezialitäten"
+    },
+    "icon": "🍛",
+    "order": 3,
+    "isActive": true,
+    "dishCount": 15
+  },
+  {
+    "_id": "4",
+    "name": {
+      "fr": "Desserts",
+      "en": "Desserts",
+      "th": "ของหวาน",
+      "ru": "Десерты",
+      "de": "Nachspeisen"
+    },
+    "description": {
+      "fr": "Desserts traditionnels thaï",
+      "en": "Traditional Thai desserts",
+      "th": "ของหวานไทยแบบดั้งเดิม",
+      "ru": "Традиционные тайские десерты",
+      "de": "Traditionelle Thai-Desserts"
+    },
+    "icon": "🍨",
+    "order": 4,
+    "isActive": true,
+    "dishCount": 5
+  }
+]

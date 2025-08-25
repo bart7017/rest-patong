@@ -96,13 +96,7 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 // Démarrage du serveur
 async function startServer() {
   try {
-    // Tentative de connexion à la base de données
-    try {
-      await connectDatabase();
-      console.log('✅ Base de données connectée');
-    } catch (dbError) {
-      console.warn('⚠️ Base de données non disponible, démarrage en mode dégradé');
-    }
+    console.log('🚀 Démarrage en mode développement avec stockage JSON');
 
     // Démarrage du serveur
     app.listen(PORT, () => {

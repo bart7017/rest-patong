@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { usePersistedState } from '@/hooks/usePersistedState';
+import { api } from '@/lib/api';
 import { initialDishes, initialCategories, initialIngredients } from '@/data/initialData';
+import { useTranslations } from '@/contexts/TranslationContext';
+import { LanguageSelector } from '@/components/LanguageSelector';
 import { 
   EyeIcon,
   PlusIcon,
@@ -67,6 +69,7 @@ interface Dish {
 }
 
 export default function AdminDashboard() {
+  const { t, locale } = useTranslations();
   const [stats, setStats] = useState<AdminStats>({
     todayViews: 1247,
     totalDishes: 0,
@@ -77,19 +80,14 @@ export default function AdminDashboard() {
     recentActivity: []
   });
 
-  const [persistedDishes] = usePersistedState('admin-dishes-v6-fresh', initialDishes);
-  
-  // Convertir les données persistées au format attendu par la homepage
-  const dishes = persistedDishes.map((dish: any) => ({
-    _id: dish._id,
-    name: dish.name,
-    price: dish.price?.amount || dish.price || 0,
-    category: dish.categoryName || dish.category,
-    isActive: dish.isActive,
-    views: dish.views
-  }));
+  const [dishes, setDishes] = useState<Dish[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const [selectedLanguage, setSelectedLanguage] = useState('fr');
+
+  // Chargement initial des données
+  useEffect(() => {
+    loadData();
+  }, []);
 
   // Calculer automatiquement les statistiques basées sur les données réelles
   useEffect(() => {
@@ -103,21 +101,21 @@ export default function AdminDashboard() {
     
     // Créer des activités récentes basées sur les plats
     const recentActivity = [
-      { action: 'Consulté', dish: topDish?.name[selectedLanguage] || 'Tom Yum Kung', time: 'Il y a 2 min' },
-      { action: 'Ajouté', dish: dishes[dishes.length - 1]?.name[selectedLanguage] || 'Nouveau plat', time: 'Il y a 1 heure' },
-      { action: 'Modifié', dish: dishes[1]?.name[selectedLanguage] || 'Pad Thai', time: 'Il y a 3 heures' }
+      { action: 'Consulté', dish: topDish?.name[locale] || 'Tom Yum Kung', time: 'Il y a 2 min' },
+      { action: 'Ajouté', dish: dishes[dishes.length - 1]?.name[locale] || 'Nouveau plat', time: 'Il y a 1 heure' },
+      { action: 'Modifié', dish: dishes[1]?.name[locale] || 'Pad Thai', time: 'Il y a 3 heures' }
     ];
     
     setStats(prev => ({
       ...prev,
       totalDishes,
       topDish: {
-        name: topDish?.name[selectedLanguage] || '',
+        name: topDish?.name[locale] || '',
         views: topDish?.views || 0
       },
       recentActivity
     }));
-  }, [dishes, selectedLanguage]);
+  }, [dishes, locale]);
 
   // Simuler l'incrémentation automatique des vues pour démontrer les mises à jour
   useEffect(() => {
@@ -131,13 +129,9 @@ export default function AdminDashboard() {
     return () => clearInterval(interval);
   }, []);
 
-  const refreshData = () => {
-    if (confirm('Êtes-vous sûr de vouloir actualiser les données ? Cela va recharger les dernières modifications.')) {
-      // Clear all localStorage
-      localStorage.clear();
-      // Reload the page to get fresh data
-      window.location.reload();
-    }
+  const refreshData = async () => {
+    console.log('Dashboard: Manual refresh requested');
+    await loadData();
   };
 
   const editDish = (dishId: string) => {
@@ -154,17 +148,52 @@ export default function AdminDashboard() {
   };
 
 
-  // Mock data for categories and ingredients
-  const [categories, setCategories] = usePersistedState<Category[]>('admin-categories', initialCategories);
-  const [ingredients, setIngredients] = usePersistedState<Ingredient[]>('admin-ingredients', initialIngredients);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
 
-  const languages = [
-    { code: 'fr', name: 'Français', flag: '🇫🇷' },
-    { code: 'en', name: 'English', flag: '🇬🇧' },
-    { code: 'th', name: 'ไทย', flag: '🇹🇭' },
-    { code: 'ru', name: 'Русский', flag: '🇷🇺' },
-    { code: 'de', name: 'Deutsch', flag: '🇩🇪' }
-  ];
+  // Charger les données depuis l'API
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      console.log('Dashboard: Loading data from API...');
+      const [dishesData, categoriesData] = await Promise.all([
+        api.getDishes().catch(e => { console.error('getDishes error:', e); throw e; }),
+        api.getCategories().catch(e => { console.error('getCategories error:', e); throw e; })
+      ]);
+      console.log(`Dashboard: Received ${dishesData.length} dishes, ${categoriesData.length} categories`);
+      
+      // Convert API dishes to dashboard format
+      const formattedDishes = dishesData.map((dish: any) => ({
+        _id: dish._id,
+        name: dish.name,
+        price: dish.price?.amount || dish.price || 0,
+        category: dish.categoryName || dish.category,
+        isActive: dish.isActive,
+        views: dish.views || 0
+      }));
+      
+      setDishes(formattedDishes);
+      setCategories(categoriesData);
+      setIngredients(initialIngredients);
+    } catch (error) {
+      console.error('ERROR: Dashboard API call failed, using local data:', error);
+      // En cas d'erreur API, utiliser les données locales
+      const formattedDishes = initialDishes.map((dish: any) => ({
+        _id: dish._id,
+        name: dish.name,
+        price: dish.price?.amount || dish.price || 0,
+        category: dish.categoryName || dish.category,
+        isActive: dish.isActive,
+        views: dish.views || 0
+      }));
+      setDishes(formattedDishes);
+      setCategories(initialCategories);
+      setIngredients(initialIngredients);
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
 
   return (
@@ -178,8 +207,8 @@ export default function AdminDashboard() {
                 <span className="text-white font-bold">🏝️</span>
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Papy - Admin</h1>
-                <p className="text-sm text-gray-600">Gestion du menu digital</p>
+                <h1 className="text-2xl font-bold text-gray-900">Papy - {t('admin')}</h1>
+                <p className="text-sm text-gray-600">{t('digitalMenuManagement')}</p>
               </div>
             </div>
             
@@ -189,61 +218,56 @@ export default function AdminDashboard() {
                 <a
                   href="/dishes"
                   className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex items-center space-x-2 text-gray-600 hover:text-orange-600 text-sm"
-                  title="Gérer les plats"
+                  title={t('manageDishes')}
                 >
                   <span className="text-lg">🍽️</span>
-                  <span className="hidden sm:inline">Plats</span>
+                  <span className="hidden sm:inline">{t('dishes')}</span>
                 </a>
                 <a
                   href="/categories"
                   className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex items-center space-x-2 text-gray-600 hover:text-blue-600 text-sm"
-                  title="Gérer les catégories"
+                  title={t('manageCategories')}
                 >
                   <TagIcon className="h-4 w-4" />
-                  <span className="hidden sm:inline">Catégories</span>
+                  <span className="hidden sm:inline">{t('categories')}</span>
                 </a>
                 <a
                   href="/ingredients"
                   className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex items-center space-x-2 text-gray-600 hover:text-green-600 text-sm"
-                  title="Gérer les ingrédients"
+                  title={t('manageIngredients')}
                 >
                   <BeakerIcon className="h-4 w-4" />
-                  <span className="hidden sm:inline">Ingrédients</span>
+                  <span className="hidden sm:inline">{t('ingredients')}</span>
                 </a>
                 <a
                   href="/analytics"
                   className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex items-center space-x-2 text-gray-600 hover:text-purple-600 text-sm"
-                  title="Analytics détaillés"
+                  title={t('detailedAnalytics')}
                 >
                   <ChartBarIcon className="h-4 w-4" />
-                  <span className="hidden sm:inline">Analytics</span>
+                  <span className="hidden sm:inline">{t('analytics')}</span>
                 </a>
               </div>
               
               {/* Language Selector */}
-              <select
-                value={selectedLanguage}
-                onChange={(e) => setSelectedLanguage(e.target.value)}
-                className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
-              >
-                {languages.map(lang => (
-                  <option key={lang.code} value={lang.code}>
-                    {lang.flag} {lang.name}
-                  </option>
-                ))}
-              </select>
+              <LanguageSelector />
               
               <button
                 onClick={refreshData}
                 className="bg-blue-500 text-white px-3 py-2 rounded-lg hover:bg-blue-600 transition-colors text-sm"
                 title="Actualiser les données"
+                disabled={loading}
               >
                 🔄 Actualiser
               </button>
               
-              <div className="flex items-center space-x-2 bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span>En ligne</span>
+              <div className={`flex items-center space-x-2 px-3 py-1 rounded-full text-sm ${
+                loading ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'
+              }`}>
+                <div className={`w-2 h-2 rounded-full ${
+                  loading ? 'bg-yellow-500 animate-spin' : 'bg-green-500 animate-pulse'
+                }`}></div>
+                <span>{loading ? t('loading') : 'En ligne'}</span>
               </div>
             </div>
           </div>
@@ -256,9 +280,9 @@ export default function AdminDashboard() {
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Consultations Aujourd'hui</p>
+                <p className="text-sm text-gray-600">{t('todayConsultations')}</p>
                 <p className="text-3xl font-bold text-gray-900">{stats.todayViews}</p>
-                <p className="text-sm text-green-600">+15% vs hier</p>
+                <p className="text-sm text-green-600">+15% {t('vsYesterday')}</p>
               </div>
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                 <EyeIcon className="h-6 w-6 text-blue-600" />
@@ -269,9 +293,9 @@ export default function AdminDashboard() {
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Plats au Menu</p>
+                <p className="text-sm text-gray-600">{t('dishesInMenu')}</p>
                 <p className="text-3xl font-bold text-gray-900">{stats.totalDishes}</p>
-                <p className="text-sm text-gray-600">{categories.length} catégories</p>
+                <p className="text-sm text-gray-600">{categories.length} {t('categories')}</p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                 <CurrencyDollarIcon className="h-6 w-6 text-green-600" />
@@ -282,9 +306,9 @@ export default function AdminDashboard() {
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Plat le Plus Consulté</p>
+                <p className="text-sm text-gray-600">{t('mostViewedDish')}</p>
                 <p className="text-xl font-bold text-gray-900">{stats.topDish.name}</p>
-                <p className="text-sm text-orange-600">{stats.topDish.views} vues</p>
+                <p className="text-sm text-orange-600">{stats.topDish.views} {t('views')}</p>
               </div>
               <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
                 <ChartBarIcon className="h-6 w-6 text-orange-600" />
@@ -295,26 +319,26 @@ export default function AdminDashboard() {
 
         {/* Quick Actions */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Actions Rapides</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('quickActions')}</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <a href="/dishes" className="flex flex-col items-center p-4 bg-gradient-to-br from-orange-500 to-red-600 text-white rounded-lg hover:shadow-lg transition-all">
               <span className="text-3xl mb-2">🍽️</span>
-              <span className="text-sm font-medium">Gérer Plats</span>
+              <span className="text-sm font-medium">{t('manageDishes')}</span>
             </a>
 
             <a href="/categories" className="flex flex-col items-center p-4 bg-gradient-to-br from-blue-500 to-cyan-600 text-white rounded-lg hover:shadow-lg transition-all">
               <TagIcon className="h-8 w-8 mb-2" />
-              <span className="text-sm font-medium">Gérer Catégories</span>
+              <span className="text-sm font-medium">{t('manageCategories')}</span>
             </a>
 
             <a href="/ingredients" className="flex flex-col items-center p-4 bg-gradient-to-br from-emerald-500 to-teal-600 text-white rounded-lg hover:shadow-lg transition-all">
               <BeakerIcon className="h-8 w-8 mb-2" />
-              <span className="text-sm font-medium">Gérer Ingrédients</span>
+              <span className="text-sm font-medium">{t('manageIngredients')}</span>
             </a>
 
             <a href="/analytics" className="flex flex-col items-center p-4 bg-gradient-to-br from-purple-500 to-indigo-600 text-white rounded-lg hover:shadow-lg transition-all">
               <ChartBarIcon className="h-8 w-8 mb-2" />
-              <span className="text-sm font-medium">Analytics</span>
+              <span className="text-sm font-medium">{t('analytics')}</span>
             </a>
           </div>
         </div>
@@ -325,12 +349,11 @@ export default function AdminDashboard() {
             <div className="bg-white rounded-lg shadow-sm border border-gray-200">
               <div className="px-6 py-4 border-b border-gray-200">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-gray-900">Gestion du Menu</h3>
+                  <h3 className="text-lg font-semibold text-gray-900">{t('menuManagement')}</h3>
                   <div className="flex items-center space-x-2">
                     <GlobeAltIcon className="h-5 w-5 text-gray-400" />
                     <span className="text-sm text-gray-600">
-                      {languages.find(l => l.code === selectedLanguage)?.flag} 
-                      {languages.find(l => l.code === selectedLanguage)?.name}
+                      Langue: {locale.toUpperCase()}
                     </span>
                   </div>
                 </div>
@@ -346,14 +369,14 @@ export default function AdminDashboard() {
                         </div>
                         <div>
                           <h4 className="text-lg font-medium text-gray-900">
-                            {dish.name[selectedLanguage as keyof typeof dish.name]}
+                            {dish.name[locale as keyof typeof dish.name]}
                           </h4>
                           <div className="flex items-center space-x-4 text-sm text-gray-600">
                             <span>{dish.price} ฿</span>
                             <span>•</span>
                             <span>{dish.category}</span>
                             <span>•</span>
-                            <span>{dish.views} vues</span>
+                            <span>{dish.views} {t('views')}</span>
                           </div>
                         </div>
                       </div>
@@ -363,14 +386,14 @@ export default function AdminDashboard() {
                         <button 
                           onClick={() => editDish(dish._id)}
                           className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
-                          title="Modifier le plat"
+                          title={t('edit')}
                         >
                           <PencilIcon className="h-5 w-5" />
                         </button>
                         <button 
-                          onClick={() => deleteDish(dish._id, dish.name[selectedLanguage as keyof typeof dish.name])}
+                          onClick={() => deleteDish(dish._id, dish.name[locale as keyof typeof dish.name])}
                           className="p-2 text-gray-400 hover:text-red-600 transition-colors"
-                          title="Supprimer le plat"
+                          title={t('delete')}
                         >
                           <TrashIcon className="h-5 w-5" />
                         </button>
@@ -385,7 +408,7 @@ export default function AdminDashboard() {
           {/* Recent Activity */}
           <div>
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Activité Récente</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('recentActivity')}</h3>
               <div className="space-y-4">
                 {stats.recentActivity.map((activity, index) => (
                   <div key={index} className="flex items-center space-x-3">
@@ -405,7 +428,7 @@ export default function AdminDashboard() {
 
             {/* Quick Links */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Liens Utiles</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('usefulLinks')}</h3>
               <div className="space-y-2">
                 <a href="/menu/fr" target="_blank" className="block text-sm text-blue-600 hover:text-blue-800">
                   🇫🇷 Voir menu français
@@ -417,7 +440,7 @@ export default function AdminDashboard() {
                   🇹🇭 Voir menu thaï
                 </a>
                 <a href="/analytics" className="block text-sm text-blue-600 hover:text-blue-800">
-                  📊 Analytics détaillés
+                  📊 {t('detailedAnalytics')}
                 </a>
               </div>
             </div>
